@@ -118,3 +118,4 @@ ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_m
        title = "Mean altitude of the growers farm in different qualityclass")
 ```
 
+####666
