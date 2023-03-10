@@ -36,8 +36,6 @@ newdataset<- newdataset%>%
   arrange(aroma)
 newdataset<- newdataset[-1,]
 rawdataset<- na.omit(dataset13)
-
-
 ```
 # Rawdata
 
@@ -53,6 +51,13 @@ p2<-ggplot(data = rawdataset, mapping = aes(x = factor(Qualityclass), y = aroma,
        title = "aroma values in qualityclass")
 
 grid.arrange(p1,p2,ncol=2)
+newdataset<- na.omit(dataset13)
+newdataset<- newdataset%>%
+  arrange(desc(altitude_mean_meters))
+newdataset<- newdataset[-c(1:4),]
+newdataset<- newdataset%>%
+  arrange(aroma)
+newdataset<- newdataset[-1,]
 ```
 
 # Cleaned data
