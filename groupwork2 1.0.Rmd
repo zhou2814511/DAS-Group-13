@@ -1,0 +1,115 @@
+---
+title: "Groupwork2"
+author: "Kuan"
+date: "2023-03-10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = NA, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+library(moderndive)
+library(gapminder)
+library(sjPlot)
+library(stats)
+library(jtools)
+library(areaplot)
+library(dplyr)
+library(skimr)
+library(kableExtra)
+library(gridExtra)
+```
+
+```{r data}
+dataset13 <- read_csv("dataset13.csv")
+newdataset<- na.omit(dataset13)
+newdataset<- newdataset%>%
+  arrange(desc(altitude_mean_meters))
+newdataset<- newdataset[-c(1:4),]
+newdataset<- newdataset%>%
+  arrange(aroma)
+newdataset<- newdataset[-1,]
+rawdataset<- na.omit(dataset13)
+
+
+```
+# Rawdata
+
+```{r,fig.cap = "\\label{fig:scat} Boxplots of mean altitude of the growers farm/left, aroma values/right in different qualityclass", fig.pos = "H"}
+p1<-ggplot(data = rawdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m",
+       title = "Mean altitude in qualityclass")
+
+p2<-ggplot(data = rawdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "aroma values",
+       title = "aroma values in qualityclass")
+
+grid.arrange(p1,p2,ncol=2)
+```
+
+# Cleaned data
+# Summary table for numerical variables
+```{r}
+newdata_summary<- newdataset%>%
+  dplyr::select(aroma,flavor,acidity,category_two_defects,altitude_mean_meters)
+my_skim <- skim_with(numeric = sfl(hist = NULL), 
+                    base = sfl(n = length))
+my_skim(newdata_summary) %>%
+  transmute(Variable=skim_variable, n = n, Mean=numeric.mean, SD=numeric.sd,
+            Min=numeric.p0, Median=numeric.p50,  Max=numeric.p100,
+            IQR = numeric.p75-numeric.p50) %>%
+  kable(caption = '\\label{tab:summariesskim} Summary statistics 
+        on the different variables on coffee.',
+        booktabs = TRUE, linesep = "", digits = 2) %>%
+  kable_styling(font_size = 10, latex_options = "HOLD_position")
+```
+
+## Aroma
+```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of aroma in different qualityclass", fig.pos = "H"}
+ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Aroma",
+       title = "Aroma in different qualityclass")
+```
+
+## Flavour
+```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of Flavor in different qualityclass", fig.pos = "H"}
+ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = flavor, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Flavor",
+       title = "Flavor in different qualityclass")
+```
+
+## Acidity
+
+```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of acidity in different qualityclass", fig.pos = "H"}
+ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = acidity, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Acidity",
+       title = "Acidity in different qualityclass")
+```
+
+## Count of defects
+```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of Count of category 2 type defects in different qualityclass", fig.pos = "H"}
+ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = category_two_defects, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Count of category 2 type defects",
+       title = "Count of category 2 type defects in different qualityclass")
+```
+
+## Mean altitude
+```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of mean altitude of the growers farm in different qualityclass", fig.pos = "H"}
+ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
+  geom_boxplot() +
+  labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m",
+       title = "Mean altitude of the growers farm in different qualityclass")
+```
+
