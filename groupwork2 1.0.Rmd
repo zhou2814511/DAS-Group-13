@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE, comment = NA, message = FALSE, warning = FALSE)
 ```
 
-```{r}
+```{r loadpackage}
 library(readr)
 library(tidyverse)
 library(moderndive)
