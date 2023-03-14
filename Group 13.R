@@ -1,4 +1,3 @@
-setwd('C:/Users/m2000/Desktop/UOG/S2/DAS/小组作业2/GLM')
 library(readr)
 library(tidyverse)
 library(moderndive)
@@ -31,9 +30,8 @@ str(newdataset)
 newdataset[,2:6]%>%
   cor()
 names(newdataset)
-newdataset$Qualityclass <- as.factor(newdataset$Qualityclass)
 newdataset$country_of_origin<- as.factor(newdataset$country_of_origin)
-levels(newdataset$Qualityclass) <- c( "Good","Poor")
+newdataset$Qualityclass<- ifelse(newdataset$Qualityclass=='Poor',0,1)
 newdataset$harvested <- as.factor(newdataset$harvested)
 #Glm
 mod.cafe <- glm(Qualityclass ~  country_of_origin +aroma + flavor+acidity+category_two_defects+altitude_mean_meters+harvested, data = newdataset,
