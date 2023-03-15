@@ -30,7 +30,6 @@ library(stringr)
 ```
 
 # Data pre-processing
-
 ## Remove missing value
 In the raw dataset, there are some missing data about mean altitude and harvested, so before analysis data we remove missing values.
 ```{r data,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
@@ -64,7 +63,6 @@ newdataset<- newdataset[-1,]
 The boxplot about mean altitude shows that there are some outliers. Four of them are more than 10000 metres, obviously they are wrong datas, so we remove them.From the boxplot about Aroma, we find there is a wrong value which equals zero and remove it from the dataset.
 
 # Suitable numerical summaries and visualizations 
-
 ```{r summaries1,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
 #summary of numerical explanatory variables
 newdata_summary<- newdataset%>%
