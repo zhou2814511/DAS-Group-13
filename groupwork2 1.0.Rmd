@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE, comment = NA, message = FALSE, warning = FALSE)
 ```
 
-```{r loadpackage}
+```{r loadpackage,echo=TRUE, eval=TRUE, warning=FALSE,message=FALSE}
 library(readr)
 library(tidyverse)
 library(moderndive)
@@ -19,39 +19,40 @@ library(gapminder)
 library(sjPlot)
 library(stats)
 library(jtools)
+library(janitor)
 library(areaplot)
 library(dplyr)
 library(skimr)
 library(kableExtra)
 library(gridExtra)
+library(ggplot2)
+library(stringr)
 ```
 
-```{r data}
+# Data pre-processing
+
+## Remove missing value
+In the raw dataset, there are some missing data about mean altitude and harvested, so before analysis data we remove missing values.
+```{r data,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
 dataset13 <- read_csv("dataset13.csv")
+dim(dataset13)
+#remove NA
 newdataset<- na.omit(dataset13)
-newdataset<- newdataset%>%
-  arrange(desc(altitude_mean_meters))
-newdataset<- newdataset[-c(1:4),]
-newdataset<- newdataset%>%
-  arrange(aroma)
-newdataset<- newdataset[-1,]
-rawdataset<- na.omit(dataset13)
+dim(newdataset)
 ```
-# Rawdata
 
-```{r,fig.cap = "\\label{fig:scat} Boxplots of mean altitude of the growers farm/left, aroma values/right in different qualityclass", fig.pos = "H"}
-p1<-ggplot(data = rawdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
+## data cleaning
+```{r data cleaning,fig.cap = "\\label{fig:scat} Boxplots of mean altitude of the growers farm/left, aroma values/right in different qualityclass", fig.pos = "H"}
+#boxplot about mean altitude by Qualityclass
+boxplot_altitude<-ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
   geom_boxplot() +
-  labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m",
-       title = "Mean altitude in qualityclass")
-
-p2<-ggplot(data = rawdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
+  labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m", title = "Mean altitude in qualityclass")
+#boxplot about Aroma
+boxplot_aroma<-ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
   geom_boxplot() +
-  labs(x = "Qualityclass", y = "aroma values",
-       title = "aroma values in qualityclass")
-
-grid.arrange(p1,p2,ncol=2)
-newdataset<- na.omit(dataset13)
+  labs(x = "Qualityclass", y = "aroma values", title = "aroma values in qualityclass")
+#remove outliers
+grid.arrange(boxplot_altitude,boxplot_aroma,ncol=2)
 newdataset<- newdataset%>%
   arrange(desc(altitude_mean_meters))
 newdataset<- newdataset[-c(1:4),]
@@ -60,9 +61,12 @@ newdataset<- newdataset%>%
 newdataset<- newdataset[-1,]
 ```
 
-# Cleaned data
-# Summary table for numerical variables
-```{r}
+The boxplot about mean altitude shows that there are some outliers. Four of them are more than 10000 metres, obviously they are wrong datas, so we remove them.From the boxplot about Aroma, we find there is a wrong value which equals zero and remove it from the dataset.
+
+# Suitable numerical summaries and visualizations 
+
+```{r summaries1,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+#summary of numerical explanatory variables
 newdata_summary<- newdataset%>%
   dplyr::select(aroma,flavor,acidity,category_two_defects,altitude_mean_meters)
 my_skim <- skim_with(numeric = sfl(hist = NULL), 
@@ -71,51 +75,113 @@ my_skim(newdata_summary) %>%
   transmute(Variable=skim_variable, n = n, Mean=numeric.mean, SD=numeric.sd,
             Min=numeric.p0, Median=numeric.p50,  Max=numeric.p100,
             IQR = numeric.p75-numeric.p50) %>%
-  kable(caption = '\\label{tab:summariesskim} Summary statistics 
-        on the different variables on coffee.',
-        booktabs = TRUE, linesep = "", digits = 2) %>%
+  kable(caption = '\\label{tab:summaries1} Summary statistics on the different numerical explanatory variables of coffee.', booktabs = TRUE, linesep = "", digits = 2) %>%
   kable_styling(font_size = 10, latex_options = "HOLD_position")
 ```
 
-## Aroma
-```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of aroma in different qualityclass", fig.pos = "H"}
+Table1 shows that the mean values of Aroma grade, Flavor grade and Acidity grade are both approximately 7.5. There are large differences of category two defects between different coffee beans, as some have no defective product, but some have 47 in the batch of coffee beans tested. Similarly, the difference in mean altitude is distinct.
+
+```{r summaries2,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+#summary of categorical explanatory variables
+#country of origin
+data_country<- newdataset %>%
+  group_by(country_of_origin) %>%
+  summarise(n=n())
+data_country
+newdataset %>%
+  tabyl(country_of_origin, Qualityclass) %>%
+  adorn_percentages() %>% 
+  adorn_pct_formatting() %>% 
+  adorn_ns() %>%
+  kable(caption = '\\label{tab1:origin} Summary statistics on country of origin.') %>%
+  kable_styling(latex_options = "HOLD_position")
+```
+
+The summary table shows that there are total 33 countries in the dataset, and 200 observations are from Mexico, which is the most, but some countries have only one observation. We also note that there are 6 countries like Laos only have poor qualityclass of coffee, the qualityclass of Ethiopia and United States(Hawaii) are all good. There also have 3 countries' qualityclass is half and half.
+
+```{r summaries3,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+#harvested
+data_harvested<- newdataset %>%
+  group_by(harvested) %>%
+  summarise(n=n())
+data_harvested
+newdataset %>%
+  tabyl(harvested, Qualityclass) %>%
+  adorn_percentages() %>% 
+  adorn_pct_formatting() %>% 
+  adorn_ns() %>%
+  kable(caption = '\\label{tab1:harvested} Summary statistics on
+harvested.') %>%
+  kable_styling(latex_options = "HOLD_position")
+```
+
+The summary table shows that the information is collected from 2010 to 2018, and 255 observations is from 2012 which is the most. We also note that in 2010 the propotion of good qualityclass is highest, which is 76.9%. The lowest is 39.2% in 2012.
+
+## Country of origin
+```{r plot_country,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center',fig.cap="\\label{fig:plot1}Propotion of Qualityclass by countries of origin.",fig.pos='H'}
+ggplot(newdataset, aes(x=Qualityclass, y=..prop.., group=country_of_origin, fill=country_of_origin))+
+  geom_bar(position = "dodge", stat="count")+
+  labs(y="Proportion")
+```
+
+The plot shows the propotion of Good qualityclass vs poor qualityclass between different country of origin. we can see some countries are all good quality, some are all poor quality.So we can fit a logistic regression model to determine whether the qualityclass of coffee can be predicted from their country of origin.
+
+## Aroma, Flavour and Acidity
+```{r plot_three_grade,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot2} Boxplot of aroma in different qualityclass", fig.pos = "H"}
+#boxplot of Aroma grade
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Aroma",
        title = "Aroma in different qualityclass")
-```
-
-## Flavour
-```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of Flavor in different qualityclass", fig.pos = "H"}
+#boxplot of Flavour grade
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = flavor, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Flavor",
        title = "Flavor in different qualityclass")
-```
-
-## Acidity
-
-```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of acidity in different qualityclass", fig.pos = "H"}
+#boxplot of Acidity grade
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = acidity, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Acidity",
        title = "Acidity in different qualityclass")
 ```
 
+The features of these three quality scores are similar. The boxplots show that coffee with good quality have higher grade in Aroma, Flavour and Acidity than poor. So we can fit a logistic regression model to see whether Aroma, Flavour and Acidity are significant predictors of the odds of qualityclass of coffee beans.
+
 ## Count of defects
-```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of Count of category 2 type defects in different qualityclass", fig.pos = "H"}
+```{r plot_count_of_defects,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot5} Boxplot of Count of category 2 type defects in different qualityclass", fig.pos = "H"}
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = category_two_defects, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Count of category 2 type defects",
        title = "Count of category 2 type defects in different qualityclass")
 ```
 
+The boxplot shows that the poor quality coffee beans have more defective products than good quality ones, and there are more outliers in poor quality coffee beans.So we can fit a logistic regression model to see whether count of category 2 type defects is a significant predictor of the odds of qualityclass of coffee beans.
+
 ## Mean altitude
-```{r,out.width = '70%',fig.align = "center", fig.cap = "\\label{fig:scat} Boxplot of mean altitude of the growers farm in different qualityclass", fig.pos = "H"}
+```{r plot_altitude,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot6} Boxplot of mean altitude of the growers farm in different qualityclass", fig.pos = "H"}
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m",
        title = "Mean altitude of the growers farm in different qualityclass")
 ```
 
-####666
+The boxplot shows that the mean altitude of good quality coffee beans are higher than poor quality ones. we can notice that the poor quality have more outliers. So we can fit a logistic regression model to see whether mean altitude of the growers is a significant predictor of the odds of qualityclass of coffee beans.
+
+## harvested
+```{r plot_harvested,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center',fig.align='center',fig.cap="\\label{fig:plot7}Propotion of Qualityclass by Harvested.",fig.pos='H'}
+ggplot(newdataset, aes(x=Qualityclass, y=..prop.., group=harvested, fill=harvested))+
+  geom_bar(position = "dodge", stat="count")+
+  labs(y="Proportion")
+prop<-data %>%
+  tabyl(harvested, Qualityclass) %>%
+  adorn_percentages() %>% 
+  adorn_pct_formatting() %>% 
+  adorn_ns()
+prop$Good<-str_sub(string=prop$Good, start=1, end=5)
+prop$Good<-as.factor(prop$Good)
+ggplot(prop, aes(x=harvested, y=Good, group=1))+
+  geom_line()+
+  labs(y="Proportion")
+```
+
+The line plot shows the propotion of Good qualityclass is highest in 2010,which is about 75%. We can fit a logistic regression model to determine whether the qualityclass of coffee can be predicted from harvested years.
