@@ -3,8 +3,8 @@ title: "Groupwork2"
 author: "Kuan"
 date: "2023-03-10"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,68 +13,94 @@ knitr::opts_chunk$set(echo = FALSE, comment = NA, message = FALSE, warning = FAL
 
 ```{r loadpackage,echo=TRUE, eval=TRUE, warning=FALSE,message=FALSE}
 library(readr)
+#Library for importing and exporting data.
 library(tidyverse)
 library(moderndive)
+#Datasets and wrapper functions for tidyverse-friendly introductory linear regression.
 library(gapminder)
+#Library which contains data on life expectancy, GDP per capita, and population for different countries over time (from 1952 to 2007).
 library(sjPlot)
+#R package that provides various functions for creating elegant and customizable visualizations of data.
 library(stats)
+#A core package in R that contains a wide range of statistical functions and distributions, including hypothesis testing, linear models, non-parametric methods, time series analysis, etc.
 library(jtools)
+#It provides additional functionality for working with regression models in R.
 library(janitor)
+#It provides functions for data cleaning and preparation.
 library(areaplot)
-library(dplyr)
+#It provides functions for creating area plots, which are similar to stacked line charts.
 library(skimr)
+#It provides functions for generating summary statistics and visualizations of your data.
 library(kableExtra)
+#It provides functions for customizing tables in R Markdown
 library(gridExtra)
-library(ggplot2)
+#It provides functions for arranging multiple grid-based plots into a single plot.
 library(stringr)
+#It provides a consistent set of functions for working with strings in R.
 ```
 
 # Data pre-processing
+
 ## Remove missing value
+
 In the raw dataset, there are some missing data about mean altitude and harvested, so before analysis data we remove missing values.
+
 ```{r data,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
 dataset13 <- read_csv("dataset13.csv")
+#Import csv file.
 dim(dataset13)
-#remove NA
+#Remove NA.
 newdataset<- na.omit(dataset13)
 dim(newdataset)
+#Measure the size of the dataset.
 ```
 
-## data cleaning
-```{r data cleaning,fig.cap = "\\label{fig:scat} Boxplots of mean altitude of the growers farm/left, aroma values/right in different qualityclass", fig.pos = "H"}
-#boxplot about mean altitude by Qualityclass
+## data wrangling
+
+```{r data wrangling,fig.cap = "\\label{fig:scat} Boxplots of mean altitude of the growers farm/left, aroma values/right in different qualityclass", fig.pos = "H"}
+#boxplot about mean altitude by Quality class
 boxplot_altitude<-ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "Mean altitude of the growers farm/m", title = "Mean altitude in qualityclass")
+#This code will generate a boxplot showing the distribution of mean altitudes for growers in different Quality classes(Poor or Good).
+
 #boxplot about Aroma
 boxplot_aroma<-ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
   geom_boxplot() +
   labs(x = "Qualityclass", y = "aroma values", title = "aroma values in qualityclass")
+#This code will generate a boxplot showing the distribution of aroma score in different Quality classes(Poor or Good).
+
 #remove outliers
-grid.arrange(boxplot_altitude,boxplot_aroma,ncol=2)
+grid.arrange(boxplot_altitude, boxplot_aroma, ncol=2)
 newdataset<- newdataset%>%
   arrange(desc(altitude_mean_meters))
 newdataset<- newdataset[-c(1:4),]
 newdataset<- newdataset%>%
   arrange(aroma)
 newdataset<- newdataset[-1,]
+#The grid.arrange() function is used to arrange the two ggplot objects (boxplot_altitude and boxplot_aroma) into a single plot with two columns. Then, the dataset is sorted in descending order by filter altitude_mean_meters, and the top 4 rows are removed because the data(190164.000, 190164.000, 110000.000, 11000.000) is unrealistic. After that, the dataset is sorted by aroma and the first row is removed because of repetition.
+
 ```
 
 The boxplot about mean altitude shows that there are some outliers. Four of them are more than 10000 metres, obviously they are wrong datas, so we remove them.From the boxplot about Aroma, we find there is a wrong value which equals zero and remove it from the dataset.
 
-# Suitable numerical summaries and visualizations 
+# Suitable numerical summaries and visualizations
+
 ```{r summaries1,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
 #summary of numerical explanatory variables
 newdata_summary<- newdataset%>%
   dplyr::select(aroma,flavor,acidity,category_two_defects,altitude_mean_meters)
+#It selects the columns aroma, flavor, acidity, category_two_defects, and altitude_mean_meters from the newdataset.
 my_skim <- skim_with(numeric = sfl(hist = NULL), 
                     base = sfl(n = length))
 my_skim(newdata_summary) %>%
+#The resulting summary shows statistics such as minimum, median, maximum, mean, standard deviation, missing values, and number of observations for each of the numeric variables in newdata_summary.
   transmute(Variable=skim_variable, n = n, Mean=numeric.mean, SD=numeric.sd,
             Min=numeric.p0, Median=numeric.p50,  Max=numeric.p100,
             IQR = numeric.p75-numeric.p50) %>%
   kable(caption = '\\label{tab:summaries1} Summary statistics on the different numerical explanatory variables of coffee.', booktabs = TRUE, linesep = "", digits = 2) %>%
   kable_styling(font_size = 10, latex_options = "HOLD_position")
+#The resulting data frame is formatted as a LaTeX table, The caption argument sets the caption of the table, booktabs = TRUE creates a table with the booktabs style, linesep = "" removes the default line separator between rows, and digits = 2 rounds the numeric values to 2 decimal places.
 ```
 
 Table1 shows that the mean values of Aroma grade, Flavor grade and Acidity grade are both approximately 7.5. There are large differences of category two defects between different coffee beans, as some have no defective product, but some have 47 in the batch of coffee beans tested. Similarly, the difference in mean altitude is distinct.
@@ -85,6 +111,7 @@ Table1 shows that the mean values of Aroma grade, Flavor grade and Acidity grade
 data_country<- newdataset %>%
   group_by(country_of_origin) %>%
   summarise(n=n())
+#This code creates a summary of the frequencies of the different countries of origin in the dataset newdataset. It first groups the data by the country_of_origin variable and then counts the number of observations in each group using the summarise() function.
 data_country
 newdataset %>%
   tabyl(country_of_origin, Qualityclass) %>%
@@ -93,6 +120,7 @@ newdataset %>%
   adorn_ns() %>%
   kable(caption = '\\label{tab1:origin} Summary statistics on country of origin.') %>%
   kable_styling(latex_options = "HOLD_position")
+#This part of the code uses the tabyl() function to create a contingency table of the country_of_origin and Qualityclass variables. The table display the percentages of observations in each category.
 ```
 
 The summary table shows that there are total 33 countries in the dataset, and 200 observations are from Mexico, which is the most, but some countries have only one observation. We also note that there are 6 countries like Laos only have poor qualityclass of coffee, the qualityclass of Ethiopia and United States(Hawaii) are all good. There also have 3 countries' qualityclass is half and half.
@@ -116,6 +144,7 @@ harvested.') %>%
 The summary table shows that the information is collected from 2010 to 2018, and 255 observations is from 2012 which is the most. We also note that in 2010 the propotion of good qualityclass is highest, which is 76.9%. The lowest is 39.2% in 2012.
 
 ## Country of origin
+
 ```{r plot_country,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center',fig.cap="\\label{fig:plot1}Propotion of Qualityclass by countries of origin.",fig.pos='H'}
 ggplot(newdataset, aes(x=Qualityclass, y=..prop.., group=country_of_origin, fill=country_of_origin))+
   geom_bar(position = "dodge", stat="count")+
@@ -125,6 +154,7 @@ ggplot(newdataset, aes(x=Qualityclass, y=..prop.., group=country_of_origin, fill
 The plot shows the propotion of Good qualityclass vs poor qualityclass between different country of origin. we can see some countries are all good quality, some are all poor quality.So we can fit a logistic regression model to determine whether the qualityclass of coffee can be predicted from their country of origin.
 
 ## Aroma, Flavour and Acidity
+
 ```{r plot_three_grade,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot2} Boxplot of aroma in different qualityclass", fig.pos = "H"}
 #boxplot of Aroma grade
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = aroma, fill = Qualityclass)) +
@@ -146,6 +176,7 @@ ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = acidity, f
 The features of these three quality scores are similar. The boxplots show that coffee with good quality have higher grade in Aroma, Flavour and Acidity than poor. So we can fit a logistic regression model to see whether Aroma, Flavour and Acidity are significant predictors of the odds of qualityclass of coffee beans.
 
 ## Count of defects
+
 ```{r plot_count_of_defects,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot5} Boxplot of Count of category 2 type defects in different qualityclass", fig.pos = "H"}
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = category_two_defects, fill = Qualityclass)) +
   geom_boxplot() +
@@ -156,6 +187,7 @@ ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = category_t
 The boxplot shows that the poor quality coffee beans have more defective products than good quality ones, and there are more outliers in poor quality coffee beans.So we can fit a logistic regression model to see whether count of category 2 type defects is a significant predictor of the odds of qualityclass of coffee beans.
 
 ## Mean altitude
+
 ```{r plot_altitude,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center', fig.cap = "\\label{fig:plot6} Boxplot of mean altitude of the growers farm in different qualityclass", fig.pos = "H"}
 ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_mean_meters, fill = Qualityclass)) +
   geom_boxplot() +
@@ -166,6 +198,7 @@ ggplot(data = newdataset, mapping = aes(x = factor(Qualityclass), y = altitude_m
 The boxplot shows that the mean altitude of good quality coffee beans are higher than poor quality ones. we can notice that the poor quality have more outliers. So we can fit a logistic regression model to see whether mean altitude of the growers is a significant predictor of the odds of qualityclass of coffee beans.
 
 ## harvested
+
 ```{r plot_harvested,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE, out.width='90%',fig.align='center',fig.align='center',fig.cap="\\label{fig:plot7}Propotion of Qualityclass by Harvested.",fig.pos='H'}
 ggplot(newdataset, aes(x=Qualityclass, y=..prop.., group=harvested, fill=harvested))+
   geom_bar(position = "dodge", stat="count")+
