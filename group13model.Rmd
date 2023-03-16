@@ -2,7 +2,9 @@
 title: "group13model"
 author: "group13"
 date: "2023-03-16"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -68,70 +70,92 @@ newdataset$harvested <- as.factor(newdataset$harvested)
 ```
 
 # Formal Data Analysis
+We used GLM to fit a logistic regression model with Qualityclass as the binary response variable, and country_of_origin, aroma, flavor, acidity, category_two_defects, altitude_mean_meaters and harvested as the explanatory variables. A summary of the model and the a graph showing the points estimate for the log-odds with their corresponding 95% confidence interval are obtained as results.
 
 ## Basic GLM
-```{r glm,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+```{r glm,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,results='hold'}
 mod.cafe <- glm(Qualityclass ~  country_of_origin +aroma + flavor+acidity+category_two_defects+altitude_mean_meters+harvested, data = newdataset,
                 family = binomial(link = "logit"))
-mod.cafe %>%
-  summary()#AIC 543
+summary(mod.cafe) #AIC 543
 ```
 
-```{r glmplot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:glm plot} Odds of various factors influencing the quality of coffee(basic GLM model)"}
+\newpage
+
+```{r glmplot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:glm plot} Odds of various factors influencing the quality of coffee(basic GLM)"}
 plot_model(mod.cafe, show.values = TRUE,
            title = "", show.p = FALSE, value.offset = 0.5)
 ```
 
+In the results we can see that aroma, flavor and acidity has coefficients of 5.19, 8.56, 5,23 separately, indicating comparatively strong positive influence on cafe quality, whilst category_two_defects and altitude_mean_meters do not appear to have much impact. For country_of_origin and harvested, different countries and vintages have different degrees of influence on the quality of coffee. For example, Ethiopia has a strong capacity to produce good coffee, as it has a coefficient more than ten(13.33) , Panama and Hawaii have lower coefficients(3.34 and 4.26), but still can be a good places to make coffee. However, there are countries with coefficients below -10,like Cote d'Ivoire,Laos,Mauritius, Myanmar,Peru and Zambia, which shows that they are likely to produce poorer cafe. In addition, only the harvested of 2018 shows a little positive impact on cafe quality(2.03), while other variables do not appear to be strongly influential.
+
+\newpage
+
 ## GLM Stepwise
-```{r glm stepwise,eval=TRUE, warning=FALSE, message=FALSE,}
+In the previous basic GLM we fitted a model with AIC of 543, wondering whether there is better regression to fit the data after selecting only the influencial variables, we then decided to use stepwise regression to improve our model.
+```{r glm stepwise,eval=TRUE, warning=FALSE, message=FALSE,results='hold'}
 # Fit a glm using stepwise regression with AIC as the criterion
 model.step <- stepAIC(glm(Qualityclass ~  country_of_origin +aroma + flavor+acidity+category_two_defects+altitude_mean_meters+harvested, data = newdataset, family = binomial(link = "logit")), direction = "both", trace = FALSE)
+summary(mod.cafe) #AIC537
 ```
 
-```{r glm stepwise plot,eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:glm stepwise plot} Odds of various factors influencing the quality of coffee(GLM stepwise regression)"}
-# Print the selected model
-summary(model.step)#AIC 537
+\newpage
+
+```{r glm stepwise plot,eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:glm stepwise plot} Odds of various factors influencing the quality of coffee(GLM stepwise regression)"}
 plot_model(model.step, show.values = TRUE,
            title = "", show.p = FALSE, value.offset = 0.50)
 ```
+
+Using stepwise regression, we fitted a model with AIC of 537, which is relatively smaller than 543 in our first basic model, hence we can say that stepwise regression helped us to improve our model.
+
+\newpage
 
 ## Adding Interaction Terms
 Considering the possible interactions between the variables, based on the previously calculated correlations,we added some interaction terms(aroma:flavor,flavor:acidity,aroma:acidity)in order to improve our model.We summarized the results and graphically showed the log-odds and their corresponding 95% confidence intervals.
-```{r interaction model,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+```{r interaction model,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,results='hold'}
 mod.cafe <- glm(Qualityclass ~  country_of_origin +aroma + flavor+acidity+category_two_defects+altitude_mean_meters+harvested+aroma:flavor+flavor:acidity+aroma:acidity, data = newdataset,
                    family = binomial(link = "logit"))
-mod.cafe %>%
-  summary() #AIC 539
+summary(mod.cafe) #AIC539
 ```
 
-```{r interaction plot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:interaction plot} Odds of various factors influencing the quality of coffee(model with interaction terms)"}
+\newpage
+
+```{r interaction plot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:interaction plot} Odds of various factors influencing the quality of coffee(model with interaction terms)"}
 plot_model(mod.cafe, show.values = TRUE,
            title = "", show.p = FALSE, value.offset = 0.5)
 ```
 
-In the results we can see the coefficients of aroma, flavor and acidity themselves are significantly positive, while the coefficients of all our possible interaction terms are negative,which shows that these three variables may moderate each other.After adding interaction terms, we can find that the AIC of the model decreases compared to the basic model, thus we can assume that the addition of the interaction terms improved our model.
+In the results we can see the coefficients of aroma, flavor and acidity themselves are significantly positive, and there is a huge increase over the original model,while the coefficients of all our possible interaction terms are negative,which shows that these three variables may strongly moderate each other, indicating that their interaction actually affected the model at first. 
+
+After adding interaction terms, we can find that the AIC of the model decreases compared to the basic model, thus we can assume that the addition of the interaction terms improved our model.
+
+\newpage
 
 ## GLM Stepwise After Adding Interaction Terms
-In order to further improve our model, we fitted the GLM model with interaction terms using the method of stepwise regression with AIC as the criterion.
-```{r interaction stepwise,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE}
+In order to further improve our model, we fitted the GLM with interaction terms using the method of stepwise regression again with AIC as the criterion.
+```{r interaction stepwise,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,results='hold'}
 model.step <- stepAIC(glm(Qualityclass ~  country_of_origin +aroma + flavor+acidity+category_two_defects+altitude_mean_meters+harvested+aroma:flavor+flavor:acidity+aroma:acidity, data = newdataset, family = binomial(link = "logit")), direction = "both", trace = FALSE)
+summary(mod.cafe)#AIC532
 ```
 
-```{r interaction stepwise plot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:interaction stepwise} Odds of various factors influencing the quality of coffee(stepwise regression with interaction terms)"}
-summary(model.step)#AIC 532
+\newpage
+
+```{r interaction stepwise plot,echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:interaction stepwise} Odds of various factors influencing the quality of coffee(stepwise regression with interaction terms)"}
 plot_model(model.step, show.values = TRUE,
            title = "", show.p = FALSE, value.offset = 0.50)
 ```
 
-We can see from the results that the AIC decreased to the lowest among these four models we fitted. AS AIC balances simplicity and accuracy when evaluating models, we can say that after adding an interaction term and doing the stepwise regression, our fourth model is the best model. Also, the last model has the lowest BIC=720, while the other three are 766,721,776 separately, which further demonstrates the superiority of our model.
+We can see from the results that the AIC decreased to the lowest among these four models we fitted. As AIC balances simplicity and accuracy when evaluating models, we can say that after adding an interaction term and doing the stepwise regression, our fourth model is the best model. Also, the last model has the lowest BIC=720, while the other three are 766,721,776 separately, which further demonstrates the superiority of our final model.
 
-```{r level, eval=TRUE, warning=FALSE, message=FALSE}
+
+```{r level, eval=TRUE, warning=FALSE, message=FALSE,results='hide'}
 levels(newdataset$country_of_origin)
 ```
 
+\newpage
+
 # checking assumptions
 ## Residuals Plots for each variables
-```{r residuals, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:iresiduals} residuals against each variables"}
+```{r residuals, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:iresiduals} residuals against each variables"}
 res <- resid(mod.cafe)
 par(mfrow=c(3,2))
 plot(newdataset$aroma,res,xlab='aroma')
@@ -150,12 +174,14 @@ abline(0,0)
 We see that there is an even spread of the residuals above and below the zero line for each variables,although there are a very few outlier points, overrall their spread on the graphs are acceptable, hence our assumption that the residuals have mean zero appears valid.
 
 # Density Plot
-```{r density, eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:density} density plot of residuals"}
+```{r density, eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "h",fig.show='asis',fig.cap="\\label{fig:density} density plot of residuals"}
 plot(density(res),xlab='residuals',title='')
 ```
 In the graph we can see that the residuals are normally distributed with the mean 0, therefore the assumption is valid.
 
 The remaining assumptions hold naturally at the time of our modelling, thus our model appears valid.
 
+\newpage
+
 # Conclusion
-After data cleaning and processing of non-numerical data, we fitted the data to a regression model to observe the effect of each variable in the dataset on coffee quality, and we continued to improve the model by stepwise regression and adding possible interaction terms, resulting in the model with the smallest AIC value and therefore the most profile accurate model4. Looking at the summaries and graphs of model4, we can pick out the factors that have the greatest impact: aroma and flavor are very positively influencing on the quality of coffee, with coefficients of 99.1 and 102.62. The influence of origin varies very much, for example, Ethiopia and Hawaii contributes pretty much, for their coefficients are both more than ten(13.51 and 11.58). While Cote d'Ivoire,Laos,Mauritius, Myanmar,Peru and Zambia has less than -10 coefficients,making relatively strong negative effects. However, the many remaining origins do not seem to have any impact on the quality of the coffee.
+After data cleaning and processing of non-numerical data, we fitted the data to a regression model to observe the effect of each variable in the dataset on coffee quality, and we continued to improve the model by stepwise regression and adding possible interaction terms, resulting in the model with the smallest AIC value and therefore the most profile accurate. Looking at the summaries and graphs our final model, we can pick out the factors that have the greatest impact: aroma and flavor are very positively influencing on the quality of coffee, with coefficients of 99.1 and 102.62, acidity also appears to have relatively strong postive impact. The influence of origin varies very much, for example, Ethiopia and Hawaii contributes pretty much, for their coefficients are both more than ten(13.51 and 11.58). While Cote d'Ivoire,Laos,Mauritius, Myanmar,Peru and Zambia has less than -10 coefficients,making relatively strong negative effects. However, the many remaining origins do not seem to have much impact on the quality of the coffee.
