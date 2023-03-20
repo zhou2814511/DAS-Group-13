@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.15)  20 MAR 2023 20:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.3.15)  20 MAR 2023 20:38
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -677,23 +677,24 @@ File: groupwork2-1.0_files/figure-latex/interaction stepwise plot-1.pdf Graphic 
 <use groupwork2-1.0_files/figure-latex/interaction stepwise plot-1.pdf>
 Package pdftex.def Info: groupwork2-1.0_files/figure-latex/interaction stepwise plot-1.pdf  used on input line 1026.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[21] [22 <./groupwork2-1.0_files/figure-latex/interaction stepwise plot-1.pdf>] [23]
-<groupwork2-1.0_files/figure-latex/residuals-1.pdf, id=302, 469.755pt x 325.215pt>
+[21] [22 <./groupwork2-1.0_files/figure-latex/interaction stepwise plot-1.pdf>]
+<groupwork2-1.0_files/figure-latex/residuals-1.pdf, id=298, 469.755pt x 325.215pt>
 File: groupwork2-1.0_files/figure-latex/residuals-1.pdf Graphic file (type pdf)
 <use groupwork2-1.0_files/figure-latex/residuals-1.pdf>
-Package pdftex.def Info: groupwork2-1.0_files/figure-latex/residuals-1.pdf  used on input line 1072.
+Package pdftex.def Info: groupwork2-1.0_files/figure-latex/residuals-1.pdf  used on input line 1077.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<groupwork2-1.0_files/figure-latex/density-1.pdf, id=303, 469.755pt x 325.215pt>
+[23 <./groupwork2-1.0_files/figure-latex/residuals-1.pdf>]
+<groupwork2-1.0_files/figure-latex/density-1.pdf, id=312, 469.755pt x 325.215pt>
 File: groupwork2-1.0_files/figure-latex/density-1.pdf Graphic file (type pdf)
 <use groupwork2-1.0_files/figure-latex/density-1.pdf>
-Package pdftex.def Info: groupwork2-1.0_files/figure-latex/density-1.pdf  used on input line 1089.
+Package pdftex.def Info: groupwork2-1.0_files/figure-latex/density-1.pdf  used on input line 1100.
 (pdftex.def)             Requested size: 281.85518pt x 195.1305pt.
-<groupwork2-1.0_files/figure-latex/density-2.pdf, id=304, 469.755pt x 325.215pt>
+<groupwork2-1.0_files/figure-latex/density-2.pdf, id=313, 469.755pt x 325.215pt>
 File: groupwork2-1.0_files/figure-latex/density-2.pdf Graphic file (type pdf)
 <use groupwork2-1.0_files/figure-latex/density-2.pdf>
-Package pdftex.def Info: groupwork2-1.0_files/figure-latex/density-2.pdf  used on input line 1097.
+Package pdftex.def Info: groupwork2-1.0_files/figure-latex/density-2.pdf  used on input line 1115.
 (pdftex.def)             Requested size: 281.85518pt x 195.1305pt.
-[24 <./groupwork2-1.0_files/figure-latex/residuals-1.pdf>] [25 <./groupwork2-1.0_files/figure-latex/density-1.pdf> <./groupwork2-1.0_files/figure-latex/density-2.pdf>] [26] (./groupwork2-1.0.aux)
+[24 <./groupwork2-1.0_files/figure-latex/density-1.pdf> <./groupwork2-1.0_files/figure-latex/density-2.pdf>] [25] (./groupwork2-1.0.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -701,18 +702,18 @@ Package rerunfilecheck Info: File `groupwork2-1.0.out' has not changed.
 (rerunfilecheck)             Checksum: FC045C5220AF87E0F0D4AC2E7EB3242F;3235.
  ) 
 Here is how much of TeX's memory you used:
- 13072 strings out of 477984
- 215076 string characters out of 5837249
+ 13071 strings out of 477984
+ 215069 string characters out of 5837249
  1866382 words of memory out of 5000000
  32917 multiletter control sequences out of 15000+600000
  555626 words of font info for 73 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,9n,76p,994b,578s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,9n,76p,994b,576s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}<c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/Users/shnakee/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on groupwork2-1.0.pdf (26 pages, 488653 bytes).
+Output written on groupwork2-1.0.pdf (25 pages, 488507 bytes).
 PDF statistics:
- 395 PDF objects out of 1000 (max. 8388607)
- 317 compressed objects within 4 object streams
- 87 named destinations out of 1000 (max. 500000)
+ 391 PDF objects out of 1000 (max. 8388607)
+ 314 compressed objects within 4 object streams
+ 86 named destinations out of 1000 (max. 500000)
  241 words of extra memory for PDF output out of 10000 (max. 10000000)
 

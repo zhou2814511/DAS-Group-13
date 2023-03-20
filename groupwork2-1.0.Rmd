@@ -296,7 +296,7 @@ plot_model(model.step, show.values = TRUE,
 
 We can see from the results that the AIC decreased to the lowest among these four models we fitted. AS AIC balances simplicity and accuracy when evaluating models, we can say that after adding an interaction term and doing the stepwise regression, our fourth model is the best model. Also, the last model has the lowest BIC=720, while the other three are 766,721,776 separately, which further demonstrates the superiority of our model.
 
-```{r level, eval=TRUE, warning=FALSE, message=FALSE}
+```{r level, echo=TRUE, eval=FALSE, warning=FALSE, message=FALSE}
 levels(newdataset$country_of_origin)
 ```
 \newpage
@@ -304,7 +304,7 @@ levels(newdataset$country_of_origin)
 
 # checking assumptions
 ## Residuals Plots for each variables
-```{r residuals, eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "H",fig.cap="\\label{fig:iresiduals} residuals against each variables"}
+```{r residuals, echo=TRUE,eval=TRUE, warning=FALSE, message=FALSE,out.width = '100%', fig.align = "center", ,fig.pos = "H",fig.cap="\\label{fig:iresiduals} residuals against each variables"}
 res <- resid(mod.cafe)
 par(mfrow=c(3,2))
 plot(newdataset$aroma,res,xlab='aroma')
@@ -323,7 +323,7 @@ abline(0,0)
 We see that there is an even spread of the residuals above and below the zero line for each variables,although there are a very few outlier points, overrall their spread on the graphs are acceptable, hence our assumption that the residuals have mean zero appears valid.
 
 # Density plot
-```{r density, eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "H",fig.cap="\\label{fig:density} density plot of residuals"}
+```{r density, echo=TRUE,eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "H",fig.cap="\\label{fig:density} density plot of residuals"}
 plot(density(res))
 plot(hist(res))
 ```
