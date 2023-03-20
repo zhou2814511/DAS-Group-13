@@ -170,9 +170,9 @@ abline(0,0)
 ```
 We see that there is an even spread of the residuals above and below the zero line for each variables,although there are a very few outlier points, overrall their spread on the graphs are acceptable, hence our assumption that the residuals have mean zero appears valid.
 
-# Density Plot
-```{r density, eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:density} density plot of residuals"}
-plot(density(res),xlab='residuals',title='')
+# Density Histogram
+```{r density, eval=TRUE, warning=FALSE, message=FALSE,out.width = '60%', fig.align = "center", ,fig.pos = "h",fig.cap="\\label{fig:density} density histogram of residuals"}
+plot(hist(res))
 ```
 In the graph we can see that the residuals are normally distributed with the mean 0, therefore the assumption is valid.
 
