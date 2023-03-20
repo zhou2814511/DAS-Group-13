@@ -1,6 +1,6 @@
 ---
 title: "Groupwork2"
-author: "Kuan"
+author: "Kuan Wang, Xuhong Jin, Ziyan Shang, Jinhan Meng, Yijun Zhou"
 date: "2023-03-10"
 output:
   pdf_document: default
@@ -335,4 +335,4 @@ The remaining assumptions hold naturally at the time of our modelling, thus our 
 
 # Conclusion
 
-After data cleaning and processing of non-numerical data, we fitted the data to a regression model to observe the effect of each variable in the dataset on coffee quality, and we continued to improve the model by stepwise regression and adding possible interaction terms, resulting in the model with the smallest AIC value and therefore the most profile accurate model4. Looking at the summaries and graphs of model4, we can pick out the factors that have the greatest impact: aroma and flavor are very positively influencing on the quality of coffee, with coefficients of 99.1 and 102.62. The influence of origin varies very much. When the p-value is less than a certain level of significance (0.05), which means H0 is rejected, we can see that Colombia(1.56) and Thailand(2.32) have the highest coefficient of all countries, while Uganda(-1.56), India(-3.09), Mexico(-1.03) have less coefficient, making relatively negative effects. However, many remaining origins do not seem to have obvious impact on the quality of the coffee.
+After data cleaning and processing of non-numerical data, we fitted the data to a regression model to observe the effect of each variable in the dataset on coffee quality, and we continued to improve the model by stepwise regression and adding possible interaction terms, resulting in the model with the smallest AIC value and therefore the most profile accurate model4. Looking at the summaries and graphs of model4, we can pick out the factors that have the greatest impact: aroma and flavor are very positively influencing on the quality of coffee, with coefficients of 99.1 and 102.62. The influence of origin varies very much. When the p-value is less than a certain level of significance (0.05), which means H0 is rejected, we can see that Colombia(1.56) and Thailand(2.32) have the highest coefficient of all countries, while Uganda(-1.56), India(-3.09), Mexico(-1.03) have less coefficient, making relatively negative effects. However, many remaining origins do not seem to have obvious impact on the quality of the coffee.The interaction of aroma and flavor will have negative effect(-1.24) on quality of coffee.
